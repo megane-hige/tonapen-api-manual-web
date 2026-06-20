@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>となペンAPI化マニュアル｜第1章 Web記事版</title>
+  <meta name="description" content="となペンAPI化マニュアル 第1章 全体定義・基本方針のWeb記事版。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <p class="kicker">Web記事版 / GitHub Pages ready</p>
+      <h1>となペンAPI化マニュアル</h1>
+      <p class="subtitle">第1章　全体定義・基本方針（校正版・DOCX正本候補）</p>
+      <p class="lead">旧v0.2の情報密度を維持しつつ、新しい1-X／2-X／3-X構成へ読み替えた第1章正本候補。</p>
+    </div>
+  </header>
+  <main class="container layout">
+    <aside class="toc" aria-label="目次">
+      <h2>目次</h2>
+      <nav>
+        <a class="toc-lv2" href="#1-0-章の目的">1-0　章の目的</a><a class="toc-lv2" href="#1-1-開始前提">1-1　開始前提</a><a class="toc-lv2" href="#1-2-運用主体の定義">1-2　運用主体の定義</a><a class="toc-lv3" href="#1-2補足-責任分離表">1-2補足　責任分離表</a><a class="toc-lv3" href="#1-2補足-禁止混同">1-2補足　禁止混同</a><a class="toc-lv2" href="#1-3-基本サイクル定義">1-3　基本サイクル定義</a><a class="toc-lv3" href="#1-3補足-サイクル構造">1-3補足　サイクル構造</a><a class="toc-lv3" href="#1-3補足-基本サイクルの意味">1-3補足　基本サイクルの意味</a><a class="toc-lv2" href="#1-4-状態フラグ定義">1-4　状態フラグ定義</a><a class="toc-lv3" href="#1-4補足-状態フラグ概要表">1-4補足　状態フラグ概要表</a><a class="toc-lv2" href="#1-5-公開-非公開情報定義">1-5　公開／非公開情報定義</a><a class="toc-lv3" href="#1-5補足-公開-非公開情報表">1-5補足　公開／非公開情報表</a><a class="toc-lv3" href="#1-5補足-公開制約">1-5補足　公開制約</a><a class="toc-lv2" href="#1-6-画像生成レイヤー定義">1-6　画像生成レイヤー定義</a><a class="toc-lv3" href="#1-6補足-画像生成レイヤー責任表">1-6補足　画像生成レイヤー責任表</a><a class="toc-lv3" href="#1-6補足-禁止事項">1-6補足　禁止事項</a><a class="toc-lv2" href="#1-7-データ保存-進行更新境界定義">1-7　データ保存・進行更新境界定義</a><a class="toc-lv3" href="#1-7補足-保存と進行更新の分離">1-7補足　保存と進行更新の分離</a><a class="toc-lv3" href="#1-7補足-不変条件">1-7補足　不変条件</a><a class="toc-lv2" href="#1-8-実行制約-エラー-ハング回避定義">1-8　実行制約・エラー／ハング回避定義</a><a class="toc-lv3" href="#1-8補足-実行制約表">1-8補足　実行制約表</a><a class="toc-lv3" href="#1-8補足-基本原則">1-8補足　基本原則</a><a class="toc-lv2" href="#1-9-パラメーター区分定義">1-9　パラメーター区分定義</a><a class="toc-lv3" href="#1-9補足-パラメーター区分表">1-9補足　パラメーター区分表</a><a class="toc-lv2" href="#第1章-校正反映チェック">第1章　校正反映チェック</a><a class="toc-lv2" href="#他章への影響-修正候補">他章への影響・修正候補</a>
+      </nav>
+    </aside>
+    <article class="article">
+      <h2 id="1-0-章の目的">1-0　章の目的</h2><div class="table-wrap"><table>
+<thead><tr><th>区分</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>目的</td><td>本章では、「となペンAPI化マニュアル」全体の開始前提、運用主体、基本サイクル、状態フラグ、公開／非公開情報、画像生成レイヤー、保存と進行更新、実行制約、パラメーター区分を定義する。</td></tr>
+<tr><td>章の性質</td><td>本章は、ゲーム進行とAPI化運用における基本定義・境界条件・事故防止原則を固定する章である。</td></tr>
+<tr><td>非対象</td><td>具体的な投稿手順、投票受付手順、結果投稿手順、Actions内部処理、game-state.json の詳細設計、applyChoiceResult の内部処理は本章では扱わない。</td></tr>
+<tr><td>詳細参照</td><td>運用者の具体手順は第2章、システム内部制御は第3章で扱う。</td></tr>
+</tbody></table></div><h2 id="1-1-開始前提">1-1　開始前提</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-1</td><td>開始前提</td><td>ゲームは完成済みであり、mixi2上にデプロイ済みである。プレイヤーが参加できる状態を「サービス開始」と呼ぶ。</td><td>運用者が最終確認・告知を行う</td><td>サービス開始</td><td>公開可否の最終判断は運用者が行う。</td></tr>
+</tbody></table></div><h2 id="1-2-運用主体の定義">1-2　運用主体の定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-2</td><td>運用主体の定義</td><td>運用者は、ゲーム設計者・GPTユーザーを指す。シーン準備、投稿、投票受付確認、採用行動確定、結果反映依頼、結果投稿までを管理する。プレイヤーは、mixi2の参加者を指し、公開された選択肢に投票してゲーム進行に影響を与える。</td><td>運用者／プレイヤー</td><td>運用者、プレイヤー</td><td>以後「ユーザー」は原則使わず、「運用者」に統一する。</td></tr>
+</tbody></table></div><h3 id="1-2補足-責任分離表">1-2補足　責任分離表</h3><div class="table-wrap"><table>
+<thead><tr><th>主体</th><th>役割</th><th>できること</th><th>できないこと</th></tr></thead>
+<tbody>
+<tr><td>運用者</td><td>ゲーム運用主体</td><td>投稿、判断、確認、採用行動確定、画像生成AIへの投入、結果反映依頼</td><td>内部状態を直接・無制限に進行更新すること</td></tr>
+<tr><td>プレイヤー</td><td>投票参加者</td><td>A/B/C/Dへの投票、結果閲覧</td><td>内部情報参照、採用行動の直接確定、状態更新</td></tr>
+<tr><td>GPT</td><td>生成支援レイヤー</td><td>文生成、選択肢案作成、結果文案作成、画像生成プロンプト作成</td><td>進行更新、画像生成AIへの投入、Actions内部制御</td></tr>
+<tr><td>Actions / Backend</td><td>実行・保存レイヤー</td><td>状態保存、状態フラグ管理、結果反映処理</td><td>投稿文や演出文の最終公開判断</td></tr>
+<tr><td>game-state.json</td><td>永続状態の保存先</td><td>現在状態、選択肢、状態フラグ、内部評価などの保存</td><td>実行主体ではない</td></tr>
+</tbody></table></div><h3 id="1-2補足-禁止混同">1-2補足　禁止混同</h3><div class="table-wrap"><table>
+<thead><tr><th>NG混同</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>プレイヤー＝運用者</td><td>投票する主体と運用判断する主体は分離する。</td></tr>
+<tr><td>GPT＝実行主体</td><td>GPTは生成支援レイヤーであり、進行更新主体ではない。</td></tr>
+<tr><td>投稿＝進行更新</td><td>SNS投稿は表示であり、作戦状態を進める処理ではない。</td></tr>
+<tr><td>保存＝進行更新</td><td>記録と作戦状態の変化は別概念である。</td></tr>
+<tr><td>画像生成＝進行更新</td><td>画像生成や画像差し替えでは作戦状態を進めない。</td></tr>
+</tbody></table></div><h2 id="1-3-基本サイクル定義">1-3　基本サイクル定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-3</td><td>基本サイクル</td><td>ゲーム進行は、シーン準備 → 選択肢投稿 → 投票受付 → 採用行動確定 → 結果反映 → 結果投稿 → 次シーン準備で構成される。</td><td>シーン準備、選択肢投稿、採用行動確定、結果反映依頼、結果投稿、次シーン準備は運用者が管理する。投票はプレイヤーが行う。</td><td>ターン、採用行動、基本サイクル</td><td>詳細な運用手順は第2章の基本サイクル運用表で管理する。</td></tr>
+</tbody></table></div><h3 id="1-3補足-サイクル構造">1-3補足　サイクル構造</h3><div class="flow-box">シーン準備 → 選択肢投稿 → 投票受付 → 採用行動確定 → 結果反映 → 結果投稿 → 次シーン準備</div><h3 id="1-3補足-基本サイクルの意味">1-3補足　基本サイクルの意味</h3><div class="table-wrap"><table>
+<thead><tr><th>観点</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>時間単位</td><td>1ターンは、シーン準備から次シーン準備までの一連の進行単位である。</td></tr>
+<tr><td>状態単位</td><td>各工程は状態フラグと対応して管理される。</td></tr>
+<tr><td>投票単位</td><td>プレイヤーは、公開されたA/B/C/Dの選択肢に投票する。</td></tr>
+<tr><td>採用単位</td><td>投票結果または運用ルールにより、1つの採用行動を確定する。</td></tr>
+<tr><td>進行更新単位</td><td>作戦状態を進める進行更新は、採用行動確定後の結果反映時にのみ行う。</td></tr>
+<tr><td>詳細参照</td><td>運用工程の詳細は第2章、状態遷移の詳細は第3章で扱う。</td></tr>
+</tbody></table></div><h2 id="1-4-状態フラグ定義">1-4　状態フラグ定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-4</td><td>状態フラグ</td><td>choice_open は投票受付中を示す。result_pending は投票終了後、採用行動確定待ちまたは結果反映待ちを示す。この段階ではまだ applyChoiceResult を呼ばない。result_resolved は結果反映済みで、次シーン準備段階にある状態を示す。将来拡張として scene_drafting を追加できる。</td><td>Actions / Backend により保存・管理される</td><td>choice_open、result_pending、result_resolved、scene_drafting</td><td>フラグ遷移の重複更新を避ける。詳細な状態遷移は第3章で扱う。</td></tr>
+</tbody></table></div><h3 id="1-4補足-状態フラグ概要表">1-4補足　状態フラグ概要表</h3><div class="table-wrap"><table>
+<thead><tr><th>フラグ</th><th>意味</th><th>主な工程</th><th>本章での扱い</th><th>詳細参照</th></tr></thead>
+<tbody>
+<tr><td>choice_open</td><td>投票受付中</td><td>選択肢投稿後、投票受付中</td><td>定義のみ</td><td>第3章</td></tr>
+<tr><td>result_pending</td><td>投票終了後、採用行動確定待ちまたは結果反映待ち</td><td>採用行動確定前後</td><td>applyChoiceResult をまだ呼ばない状態として定義</td><td>第3章</td></tr>
+<tr><td>result_resolved</td><td>結果反映済み</td><td>結果反映後、結果投稿、次シーン準備</td><td>次シーン準備可能状態として定義</td><td>第3章</td></tr>
+<tr><td>scene_drafting</td><td>次シーン準備中</td><td>将来拡張</td><td>任意拡張フラグとして定義</td><td>第3章</td></tr>
+</tbody></table></div><h2 id="1-5-公開-非公開情報定義">1-5　公開／非公開情報定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-5</td><td>公開／非公開情報</td><td>公開情報は、抽象現在地、状況短文、選択肢文、結果短文、演出とする。非公開情報は、実在地名、距離、方角、裏パラメーター名、裏パラメーター数値、票数、内部評価とする。</td><td>運用ポリシー</td><td>公開情報、非公開情報</td><td>画像内テキストにも非公開情報を出さない。</td></tr>
+</tbody></table></div><h3 id="1-5補足-公開-非公開情報表">1-5補足　公開／非公開情報表</h3><div class="table-wrap"><table>
+<thead><tr><th>区分</th><th>公開情報</th><th>非公開情報</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>情報種別</td><td>抽象現在地、状況短文、選択肢文、結果短文、演出</td><td>実在地名、距離、方角、裏パラメーター名、裏パラメーター数値、票数、内部評価</td><td>票数は原則非公開。演出上必要な場合のみ「突破派が優勢」など、数値を伏せた傾向表現にする。</td></tr>
+</tbody></table></div><h3 id="1-5補足-公開制約">1-5補足　公開制約</h3><div class="table-wrap"><table>
+<thead><tr><th>観点</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>公開原則</td><td>プレイヤーに見せる情報は、抽象化された状況と選択肢に限定する。</td></tr>
+<tr><td>非公開原則</td><td>内部判断に使う情報、実在地理、数値、票数、内部評価は公開しない。</td></tr>
+<tr><td>画像内テキスト</td><td>投稿文と同じ非公開情報ルールを適用する。</td></tr>
+<tr><td>票数表現</td><td>数値票数は出さない。必要な場合のみ傾向表現にする。</td></tr>
+<tr><td>目的</td><td>情報非対称性を維持し、ゲーム性を保護する。</td></tr>
+</tbody></table></div><h2 id="1-6-画像生成レイヤー定義">1-6　画像生成レイヤー定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-6</td><td>画像生成レイヤー定義</td><td>本API運用では、GPTは画像を直接生成しない。運用者がテンプレ画像／キャラ画像を画像生成AIへ添付し、GPTはイラスト生成プロンプトをコードブロック形式で出力する。</td><td>GPT → 運用者</td><td>イラスト生成プロンプト、画像生成AI</td><td>通常チャットの画像生成機能とは切り分ける。詳細運用は第2章で扱う。</td></tr>
+</tbody></table></div><h3 id="1-6補足-画像生成レイヤー責任表">1-6補足　画像生成レイヤー責任表</h3><div class="table-wrap"><table>
+<thead><tr><th>主体</th><th>役割</th><th>制約</th><th>詳細参照</th></tr></thead>
+<tbody>
+<tr><td>GPT</td><td>イラスト生成プロンプトを作成する</td><td>本API運用では画像を直接生成しない</td><td>第2章</td></tr>
+<tr><td>運用者</td><td>テンプレ画像／キャラ画像を添付し、画像生成AIへ投入し、生成結果を確認する</td><td>非公開情報を画像内に含めない</td><td>第2章</td></tr>
+<tr><td>外部画像生成AI</td><td>画像生成を行う</td><td>ゲーム進行更新には関与しない</td><td>第2章</td></tr>
+</tbody></table></div><h3 id="1-6補足-禁止事項">1-6補足　禁止事項</h3><div class="table-wrap"><table>
+<thead><tr><th>NG</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>GPT画像生成</td><td>本API運用では、GPTが画像を直接生成しない。</td></tr>
+<tr><td>状態連動画像生成</td><td>画像生成を理由に作戦状態を進めない。</td></tr>
+<tr><td>内部値描画</td><td>裏パラメーター、票数、内部評価を画像内に出さない。</td></tr>
+<tr><td>テンプレ直接編集前提</td><td>テンプレ画像やキャラ画像を、元画像そのものの編集前提にしない。生成AIで新規生成する運用とする。</td></tr>
+</tbody></table></div><h2 id="1-7-データ保存-進行更新境界定義">1-7　データ保存・進行更新境界定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-7</td><td>データ保存・進行更新境界</td><td>game-state.json に現在地、パラメーター、選択肢、内部評価、状態フラグを永続化する。作戦状態を進める進行更新は applyChoiceResult 実行時の1回のみ行う。選択肢作成やプロンプト作成時に保存する場合でも、進行結果は書き込まない。</td><td>Railway Actions / Backend</td><td>game-state.json、applyChoiceResult、保存、進行更新</td><td>保存と進行更新を分離する。詳細な保存設計は第3章で扱う。</td></tr>
+</tbody></table></div><h3 id="1-7補足-保存と進行更新の分離">1-7補足　保存と進行更新の分離</h3><div class="table-wrap"><table>
+<thead><tr><th>区分</th><th>内容</th><th>例</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>保存</td><td>メモ、投稿内容、選択肢案、採用行動、状態フラグ、内部情報などを記録する処理</td><td>投稿内容保存、投票状況メモ、採用行動メモ</td><td>保存のみでは作戦状態は進まない。</td></tr>
+<tr><td>進行更新</td><td>作戦状態、パラメーター、危険度、ルート進行などを実際に変更する処理</td><td>applyChoiceResult による結果反映</td><td>採用行動確定後に1回のみ行う。</td></tr>
+</tbody></table></div><h3 id="1-7補足-不変条件">1-7補足　不変条件</h3><div class="table-wrap"><table>
+<thead><tr><th>不変条件</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>保存 ≠ 進行更新</td><td>保存しただけでは作戦状態は変化しない。</td></tr>
+<tr><td>投稿 ≠ 進行更新</td><td>SNS投稿は表示であり、作戦状態を進める処理ではない。</td></tr>
+<tr><td>画像生成 ≠ 進行更新</td><td>画像生成やプロンプト作成では作戦状態は進まない。</td></tr>
+<tr><td>進行更新の唯一性</td><td>作戦状態を進める進行更新は、採用行動確定後の applyChoiceResult によってのみ行う。</td></tr>
+</tbody></table></div><h2 id="1-8-実行制約-エラー-ハング回避定義">1-8　実行制約・エラー／ハング回避定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-8</td><td>実行制約・エラー／ハング回避</td><td>applyChoiceResult は採用行動確定時に1回のみ呼ぶ。GPT Builderプレビューでは画像生成やActions実行のテストを行わない。本番確認は通常チャットまたは専用テスト環境で実施する。選択肢作成、結果文作成、プロンプト生成時は状態フラグを進めない。</td><td>運用ルール</td><td>applyChoiceResult、Actions、エラー回避、ハング回避</td><td>最重要事故防止ルール。詳細な例外対応は第2章・第3章で扱う。</td></tr>
+</tbody></table></div><h3 id="1-8補足-実行制約表">1-8補足　実行制約表</h3><div class="table-wrap"><table>
+<thead><tr><th>制約対象</th><th>内容</th><th>詳細参照</th></tr></thead>
+<tbody>
+<tr><td>applyChoiceResult</td><td>採用行動確定後に1回のみ実行する。</td><td>第3章</td></tr>
+<tr><td>選択肢作成</td><td>選択肢案作成時に進行更新しない。</td><td>第2章／第3章</td></tr>
+<tr><td>結果文作成</td><td>結果文作成時に追加の進行更新をしない。</td><td>第2章／第3章</td></tr>
+<tr><td>プロンプト作成</td><td>画像プロンプト作成時に状態フラグを進めない。</td><td>第2章／第3章</td></tr>
+<tr><td>画像生成</td><td>画像生成を理由に進行更新しない。</td><td>第2章</td></tr>
+<tr><td>GPT Builderプレビュー</td><td>画像生成やActions実行のテストを行わない。</td><td>第2章／第3章</td></tr>
+</tbody></table></div><h3 id="1-8補足-基本原則">1-8補足　基本原則</h3><p>生成 ≠ 状態変化
+投稿 ≠ 状態変化
+保存 ≠ 状態変化
+画像生成 ≠ 進行更新</p><h2 id="1-9-パラメーター区分定義">1-9　パラメーター区分定義</h2><div class="table-wrap"><table>
+<thead><tr><th>ID</th><th>区分</th><th>内容</th><th>主体・責任</th><th>関連語句</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1-9</td><td>パラメーター区分</td><td>表パラメーターは、読者に示す主要指標である。実数値は表示せず、段階、アイコン、短い状態文で示す。裏パラメーターは、内部判定用詳細値であり、完全非公開とする。</td><td>詳細は後続章で確定</td><td>表パラメーター、裏パラメーター</td><td>詳細設計は後続章へ送る。</td></tr>
+</tbody></table></div><h3 id="1-9補足-パラメーター区分表">1-9補足　パラメーター区分表</h3><div class="table-wrap"><table>
+<thead><tr><th>区分</th><th>内容</th><th>公開可否</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>表パラメーター</td><td>読者向けの可視指標。実数値は出さず、段階、アイコン、短い状態文で表現する。</td><td>公開可</td><td>数値ではなく印象・段階表現にする。</td></tr>
+<tr><td>裏パラメーター</td><td>内部判定用の詳細値。</td><td>完全非公開</td><td>投稿文、画像内テキスト、通常出力に出さない。</td></tr>
+</tbody></table></div><h2 id="第1章-校正反映チェック">第1章　校正反映チェック</h2><div class="table-wrap"><table>
+<thead><tr><th>確認項目</th><th>判定</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>旧v0.2の情報密度を維持している</td><td>OK</td><td>状態フラグ、保存、エラー回避、パラメーター区分を残した。</td></tr>
+<tr><td>新章構成へ読み替えている</td><td>OK</td><td>第2章・第3章への参照を更新した。</td></tr>
+<tr><td>「ユーザー」表記を避けている</td><td>OK</td><td>運用者／プレイヤーへ統一した。</td></tr>
+<tr><td>状態フラグ定義を削っていない</td><td>OK</td><td>1-4として独立維持した。</td></tr>
+<tr><td>公開／非公開情報が明確</td><td>OK</td><td>1-5で表化した。</td></tr>
+<tr><td>画像生成レイヤーが明確</td><td>OK</td><td>1-6で責任分離した。</td></tr>
+<tr><td>保存と進行更新が分離されている</td><td>OK</td><td>1-7で旧「データ保存」を強化した。</td></tr>
+<tr><td>エラー／ハング回避が消えていない</td><td>OK</td><td>1-8として維持した。</td></tr>
+<tr><td>パラメーター区分が残っている</td><td>OK</td><td>1-9として維持した。</td></tr>
+<tr><td>第1章に内部処理の細目が入りすぎていない</td><td>OK</td><td>詳細設計は第3章へ送った。</td></tr>
+</tbody></table></div><h2 id="他章への影響-修正候補">他章への影響・修正候補</h2><div class="table-wrap"><table>
+<thead><tr><th>影響先</th><th>修正候補</th></tr></thead>
+<tbody>
+<tr><td>第2章</td><td>1-3の基本サイクル定義を、2-1基本サイクル運用表へ展開する。</td></tr>
+<tr><td>第2章</td><td>1-5の公開／非公開情報定義を、2-9投稿前チェックリストへ反映する。</td></tr>
+<tr><td>第2章</td><td>1-6の画像生成レイヤー定義を、2-3画像・プロンプト運用表へ展開する。</td></tr>
+<tr><td>第2章</td><td>1-8の実行制約を、2-7結果反映依頼手順と2-10例外対応に反映する。</td></tr>
+<tr><td>第3章</td><td>1-4の状態フラグ定義を、3-1状態フラグ運用と3-2状態遷移表へ展開する。</td></tr>
+<tr><td>第3章</td><td>1-7の保存と進行更新の分離を、3-3保存設計および3-4保存と進行更新の分離へ展開する。</td></tr>
+<tr><td>第3章</td><td>1-8の applyChoiceResult 制約を、3-5実行制御へ展開する。</td></tr>
+<tr><td>別紙A</td><td>第1章の語句を新章番号で語句定義表へ更新する。</td></tr>
+<tr><td>別紙B</td><td>第1章に「状態フラグ定義表」「進行更新境界表」「実行制約表」を追加する。</td></tr>
+</tbody></table></div><p>判定：第1章は、旧v0.2の密度を維持し、新章構成へ読み替えた再校了候補とする。第1章を抽象化しすぎず、事故防止情報は残す。</p>
+      <footer class="article-footer">
+        <p>本ページは、DOCX校正版をWeb閲覧用に変換した記事版です。DOCX原本は <code>source/tonapen_api_manual_chapter1_revised_final.docx</code> に配置しています。</p>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>
